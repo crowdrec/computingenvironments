@@ -42,6 +42,7 @@
     cwd        => '/mnt/algo',
     creates => "/mnt/algo/target/crowdrec-mahout-test-1.0-SNAPSHOT-jar-with-dependencies.jar",
     path => ["/usr/bin", "/usr/sbin", "/bin", "/sbin"],
+    timeout => 600
   } ->
 
   # Execute algorithm
