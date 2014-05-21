@@ -23,8 +23,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		config.vm.define node["hostname"] do |node_config|
 	    	node_config.vm.box = node["box"]
 	    	node_config.vm.box_url = node["boxurl"]
-	      	node_config.vm.host_name = node["hostname"] + '.' + DOMAIN  # For Vagrant API v1 
-	      	node_config.vm.hostname  = node["hostname"] + '.' + DOMAIN   # For Vagrant API v2
 	      	#node_config.vm.network 'private_network', type: 'dhcp'
 	      	#node_config.vm.network 'private_network', ip: node["ip"]
 	      				
