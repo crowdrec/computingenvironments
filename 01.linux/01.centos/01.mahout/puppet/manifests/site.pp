@@ -27,7 +27,6 @@
 
   # Install Maven
   class { "maven::maven":
-    require => "
     version => "3.2.1", # version to install
     require => File['/opt/java'],
     # you can get Maven tarball from a Maven repository instead than from Apache servers, optionally with a user/password
