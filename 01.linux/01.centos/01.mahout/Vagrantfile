@@ -1,0 +1,79 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# :box => 'centos65', boxurl => 'http://www.lyricalsoftware.com/downloads/centos65.box'
+
+BOX_NAME   		= ENV['BOX_NAME']   		|| 'centos65_lyrical'
+BOX_URI    		= ENV['BOX_URI']    		|| 'http://www.lyricalsoftware.com/downloads/centos65.box'
+
+DOMAIN     		= 'moviri.com' 				#specify DOMAIN without initial dot. e.g. "moviri.com"
+
+
+nodes = [
+  { "node_id" => 1, "hostname" => 'mahout',   "ip" => '192.168.0.42', "box" => BOX_NAME, "boxurl" => BOX_URI, "ram" => 512, "role" => 'fe'}
+]
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = '2'
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+	nodes.each do |node|
+		
+		config.vm.define node["hostname"] do |node_config|
+	    	node_config.vm.box = node["box"]
+	    	node_config.vm.box_url = node["boxurl"]
+	      	node_config.vm.host_name = node["hostname"] + '.' + DOMAIN  # For Vagrant API v1 
+	      	node_config.vm.hostname  = node["hostname"] + '.' + DOMAIN   # For Vagrant API v2
+	      	#node_config.vm.network 'private_network', type: 'dhcp'
+	      	#node_config.vm.network 'private_network', ip: node["ip"]
+	      				
+    		node_config.vm.provider 'virtualbox' do |v, override|
+				memory = node["ram"] ? node["ram"] : 256;
+				v.customize ['modifyvm', :id,
+				             '--cpuexecutioncap', '50',
+				             '--name', node["hostname"],
+				             '--memory', memory.to_s
+				             ]
+			end
+
+			if ENV['SHARED_ALGO']
+				config.vm.synced_folder ENV['SHARED_ALGO'], "/mnt/algo" 
+			end
+			if ENV['SHARED_DATA']
+						config.vm.synced_folder ENV['SHARED_DATA'], "/mnt/data"
+			end 
+			if ENV['SHARED_MSG']
+				config.vm.synced_folder ENV['SHARED_MSG'], "/mnt/messaging"
+			end 
+			
+      		
+			# Hostmanager configuration for /etc/hosts file
+			if (config.hostmanager.class == Vagrant::Config::V2::DummyConfig)
+				puts "vagrant-hostmanager plugin not installed.  Please install it for automatic creation of /etc/hosts entries."
+			else
+			 	config.hostmanager.enabled = true
+				config.hostmanager.manage_host = false
+				config.hostmanager.ignore_private_ip = false
+				config.hostmanager.include_offline = true
+				config.hostmanager.aliases = [ node["hostname"] + '.localdomain', node["hostname"] + '-alias', node["hostname"]]
+			end
+
+			# Add entries in /etc/hosts. It has been used shell provision with "alias mv" because on AWS with root account the default for mv is mv -i and it asks confirmation for overwriting /etc/hosts
+			config.vm.provision 'shell', inline: 'echo "alias mv=\'mv -f\'" >> ~/.bashrc'
+			config.vm.provision :hostmanager
+							
+      		# Provisioning puppet on boxes
+		    node_config.vm.provision 'shell', inline: 'rpm -ivh --replacepkgs http://yum.puppetlabs.com/el/6.4/products/x86_64/puppetlabs-release-6-7.noarch.rpm'
+		    node_config.vm.provision 'shell', inline: 'yum -y -t install puppet'      		
+      		        
+      		node_config.vm.provision 'puppet' do |puppet|  
+				puppet.manifests_path 	= 'puppet/manifests'
+				puppet.manifest_file	= 'site.pp'          
+				puppet.module_path 		= 'puppet/modules'     
+			end                                           
+      		
+   		end
+  	end
+  	  	
+end
