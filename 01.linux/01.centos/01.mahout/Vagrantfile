@@ -3,8 +3,8 @@
 
 # :box => 'centos65', boxurl => 'http://www.lyricalsoftware.com/downloads/centos65.box'
 
-BOX_NAME   		= ENV['BOX_NAME']   		|| 'centos65_lyrical'
-BOX_URI    		= ENV['BOX_URI']    		|| 'http://www.lyricalsoftware.com/downloads/centos65.box'
+BOX_NAME   		= ENV['BOX_NAME']   		|| 'centos64_i386'
+BOX_URI    		= ENV['BOX_URI']    		|| 'http://developer.nrel.gov/downloads/vagrant-boxes/CentOS-6.4-i386-v20131103.box'
 
 DOMAIN     		= 'moviri.com' 				#specify DOMAIN without initial dot. e.g. "moviri.com"
 
