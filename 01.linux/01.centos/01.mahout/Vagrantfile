@@ -47,21 +47,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 				config.vm.synced_folder ENV['SHARED_MSG'], "/mnt/messaging"
 			end 
 			
-      		
-			# Hostmanager configuration for /etc/hosts file
-			if (config.hostmanager.class == Vagrant::Config::V2::DummyConfig)
-				puts "vagrant-hostmanager plugin not installed.  Please install it for automatic creation of /etc/hosts entries."
-			else
-			 	config.hostmanager.enabled = true
-				config.hostmanager.manage_host = false
-				config.hostmanager.ignore_private_ip = false
-				config.hostmanager.include_offline = true
-				config.hostmanager.aliases = [ node["hostname"] + '.localdomain', node["hostname"] + '-alias', node["hostname"]]
-			end
-
-			# Add entries in /etc/hosts. It has been used shell provision with "alias mv" because on AWS with root account the default for mv is mv -i and it asks confirmation for overwriting /etc/hosts
-			config.vm.provision 'shell', inline: 'echo "alias mv=\'mv -f\'" >> ~/.bashrc'
-			config.vm.provision :hostmanager
 							
       		# Provisioning puppet on boxes
 		    node_config.vm.provision 'shell', inline: 'rpm -ivh --replacepkgs http://yum.puppetlabs.com/el/6.4/products/x86_64/puppetlabs-release-6-7.noarch.rpm'
