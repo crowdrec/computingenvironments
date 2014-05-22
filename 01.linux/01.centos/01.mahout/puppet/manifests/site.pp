@@ -46,7 +46,7 @@
   } ->
 
   # Execute algorithm
-  exec { "java -cp target/crowdrec-mahout-test-1.0-SNAPSHOT-jar-with-dependencies.jar dev.crowdrec.recs.mahout.ItembasedRec_batch /tmp /mnt/messaging/msg":
+  exec { "/mnt/algo/itembasedrec.sh start":
     cwd        => '/mnt/algo',
     path => ["/usr/bin", "/usr/sbin", "/bin", "/sbin"],
     require => Exec["mvn clean compile assembly:single"]
