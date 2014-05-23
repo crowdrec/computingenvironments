@@ -1,4 +1,4 @@
-
+  
     # Install base packages
     $enhancers = [ "wget", "unzip", "git" ]
     package { $enhancers: }
@@ -45,10 +45,23 @@
     timeout => 600
   } ->
 
+  # Create startup script for algorithm
+  exec { "cp itembasedrec.sh /etc/init.d/itembasedrec":
+    cwd        => '/mnt/algo',
+    creates => "/etc/init.d/itembasedrec",
+    path => ["/usr/bin", "/usr/sbin", "/bin", "/sbin"],
+    timeout => 5
+  } ->  
+
+  # Enable algo startup at boot
+  service { "itembasedrec":
+    enable => true,
+  }
+
   # Execute algorithm
   exec { "/mnt/algo/itembasedrec.sh start":
     cwd        => '/mnt/algo',
     path => ["/usr/bin", "/usr/sbin", "/bin", "/sbin"],
     require => Exec["mvn clean compile assembly:single"]
-  }
+  } 
 
