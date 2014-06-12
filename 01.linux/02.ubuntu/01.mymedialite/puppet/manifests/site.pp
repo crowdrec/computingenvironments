@@ -1,30 +1,16 @@
 	include apt
 
-
+	#, "mono-xbuild", "mono-gmcs"
 
     # Install base packages
-    $enhancers = [ "unzip", "git",  "libfile-slurp-perl", "mono-xbuild", "mono-gmcs" ]
+    $enhancers = [ "unzip", "git",  "libfile-slurp-perl" ]
     package { $enhancers: }
 
 	apt::ppa { 'ppa:directhex/monoxide': 
 	} ->
-	package { ["mono-devel"]:
+	package { ["monodevelop"]:
     	ensure => "installed"
-	}
-    
-    #checkout mymedialite from repo
-   	git::repo{'mymedialite':
- 		path   => '/opt/mymedialite',
- 		source => 'https://github.com/zenogantner/mymedialite'
 	} ->
-
-	 # Compile mymedialite
-  	exec { "make all":
-    	cwd        => '/opt/mymedialite',
-    	creates => "/opt/mymedialite/lib/mymedialite/MyMediaLite.dll",
-    	path => ["/usr/bin", "/usr/sbin", "/bin", "/sbin"],
-    	timeout => 600
-  	} ->
 
   	#checkout wraprec from repo
 	git::repo{'wraprec':
@@ -39,6 +25,24 @@
     	path => ["/usr/bin", "/usr/sbin", "/bin", "/sbin"],
     	timeout => 600
   	} 
+
+	# Download mymedialite 
+  	exec { "wget http://mymedialite.net/download/MyMediaLite-3.10.tar.gz":
+    	cwd        => '/opt/',
+    	creates => "/opt/MyMediaLite-3.10.tar.gz",
+    	path => ["/usr/bin", "/usr/sbin", "/bin", "/sbin"],
+    	timeout => 600
+  	} ->
+
+    
+    #untar Archive
+   	exec { "tar xvfz MyMediaLite-3.10.tar.gz":
+    	cwd        => '/opt/',
+    	creates => "/opt/MyMediaLite-3.10/bin",
+    	path => ["/usr/bin", "/usr/sbin", "/bin", "/sbin"],
+    	timeout => 600
+  	} 
+
 
 
   	
