@@ -1,9 +1,6 @@
 	include apt
 
-	#"mono-runtime",  "mono-xbuild", "mono-dmcs", "mono-devel", "mono-gmcs", 
-	#Apt::Ppa['ppa:directhex/monoxide'] 
 
-	
 
     # Install base packages
     $enhancers = [ "unzip", "git",  "libfile-slurp-perl", "mono-xbuild", "mono-gmcs" ]
@@ -38,7 +35,7 @@
 	# build wraprec
 	exec { "xbuild":
     	cwd        => '/opt/wraprec',
-    	creates => "/opt/mymedialite/lib/mymedialite/MyMediaLite.dll",
+    	creates => "",
     	path => ["/usr/bin", "/usr/sbin", "/bin", "/sbin"],
     	timeout => 600
   	} 
